@@ -8,14 +8,19 @@ import pandas as pd
 import rdflib
 from rdflib import Graph
 
-data_path = '/media/masuda/HDS2-UT/QuetsalData20240401/8898.SWDFood'
+# data_path = '/media/masuda/HDS2-UT/QuetsalData20240401/8898.SWDFood'
+data_path = '/media/masuda/HDS2-UT/QuetsalData20240401/8893.GeoNames'
+prefix = data_path.split('/')[-1]
+with open('../../../prefix', 'w') as file:
+    file.write(prefix)
+
 g = Graph()
 
 
 def read_rdf_files():
     files = os.listdir(data_path)
     for file in files:
-        if file.endswith('.rdf') and file != 'iswc-aswc-2007-complete.rdf':
+        if (file.endswith('.rdf') and file != 'iswc-aswc-2007-complete.rdf') or file.endswith('.n3'):
             # print(file)
             try:
                 g.parse(data_path+'/'+file)
@@ -35,8 +40,8 @@ def save_to_dataframe():
         data.append((subject, predicate, object_))
     graph_dataframe_ = pd.DataFrame(data, columns=['subject', 'predicate', 'object'])
     sorted_df = graph_dataframe_.sort_values(by=['predicate', 'subject', 'object'])
-    sorted_df.to_csv('../data/all_triples.csv', index=False)
-    print(len(sorted_df))
+    sorted_df.to_csv(f'../../data/{prefix}_010_all_triples.csv', index=False)
+    print('length of sorted df:', len(sorted_df))
     return graph_dataframe_
 
 

@@ -1,11 +1,15 @@
-
+from Hyper000Common20240621 import read_prefix, read_dataframe
 import re
 import pandas as pd
 
+# prefix = ''
 
-def read_dataframe():
-    df = pd.read_csv('../data/all_triples.csv')
-    return df
+
+# def read_dataframe():
+#     with open('../../../prefix', 'r') as file:
+#         prefix_ = file.read()
+#     df = pd.read_csv(f'../../data/{prefix_}_010_all_triples.csv')
+#     return df, prefix_
 
 
 def create_tree(input_strings):
@@ -39,7 +43,7 @@ def create_tree(input_strings):
 
     # Add each path to the tree
     for string in input_strings:
-        path0 = str(string).replace('http://', 'http:__')
+        path0 = str(string).replace('<', '').replace('>', '').replace('http://', 'http:__')
         if path0.find('file://') >= 0:
             path0 = path0.replace('file:///', 'file:___')
         if path0.endswith('/'):
@@ -53,28 +57,32 @@ def create_tree(input_strings):
     return root
 
 
-def extract_objects(df):
+def extract_objects(df, prefix):
     objects = df['object'].unique()
-    print(len(objects))
+    print('number of objects:', len(objects))
     unique_objects = pd.DataFrame(objects, columns=['object']).sort_values(by=['object'])
-    unique_objects.to_csv('../data/unique_objects.csv', index=False)
+    unique_objects.to_csv(f'../../data/{prefix}_060_unique_objects.csv', index=False)
     pass
 
 
-def extract_object_authorities(df):
+def extract_object_authorities(df, prefix):
     objects = df['object'].unique()
     list_of_objects = list(objects)
     root_of_objects = create_tree(list_of_objects)
     object_authorities = root_of_objects.get_authorities()
     df_object_authorities = pd.DataFrame(object_authorities, columns=['object_authority'])
-    df_object_authorities.to_csv('../data/object_authorities.csv', index=False)
+    df_object_authorities.to_csv(f'../../data/{prefix}_070_object_authorities.csv', index=False)
 
 
-def main():
-    df = read_dataframe()
-    extract_objects(df)
-    extract_object_authorities(df)
+def main(csv_file_path):
+    print('Hyper024ExtractObjects20240416.py.')
+    df = read_dataframe(csv_file_path)
+    prefix = read_prefix()
+    extract_objects(df, prefix)
+    extract_object_authorities(df, prefix)
 
 
 if __name__ == '__main__':
-    main()
+    prefix = read_prefix()
+    csv_file_path = f'../../data/{prefix}_010_all_triples.csv'
+    main(csv_file_path)

@@ -1,11 +1,15 @@
-
+from Hyper000Common20240621 import read_prefix, read_dataframe
 import re
 import pandas as pd
 
+# prefix = ''
 
-def read_dataframe():
-    df = pd.read_csv('../data/all_triples.csv')
-    return df
+
+# def read_dataframe():
+#     with open('../../../prefix', 'r') as file:
+#         prefix_ = file.read()
+#     df = pd.read_csv(f'../../data/{prefix_}_010_all_triples.csv')
+#     return df, prefix_
 
 
 def create_tree(input_strings):
@@ -39,7 +43,7 @@ def create_tree(input_strings):
 
     # Add each path to the tree
     for string in input_strings:
-        path0 = string.replace('http://', 'http:__')
+        path0 = str(string).replace('<', '').replace('>', '').replace('http://', 'http:__')
         if path0.find('file://') >= 0:
             path0 = path0.replace('file:///', 'file:___')
         if path0.endswith('/'):
@@ -53,28 +57,32 @@ def create_tree(input_strings):
     return root
 
 
-def extract_subjects(df):
+def extract_subjects(df, prefix):
     subjects = df['subject'].unique()
-    print(len(subjects))
+    print('number of unique subjects:', len(subjects))
     unique_subjects = pd.DataFrame(subjects, columns=['subject']).sort_values(by=['subject'])
-    unique_subjects.to_csv('../data/unique_subjects.csv', index=False)
+    unique_subjects.to_csv(f'../../data/{prefix}_040_unique_subjects.csv', index=False)
     pass
 
 
-def extract_subject_authorities(df):
+def extract_subject_authorities(df, prefix):
     subjects = df['subject'].unique()
     list_of_subjects = list(subjects)
     root_of_subjects = create_tree(list_of_subjects)
     subject_authorities = root_of_subjects.get_authorities()
     df_subject_authorities = pd.DataFrame(subject_authorities, columns=['subject_authority'])
-    df_subject_authorities.to_csv('../data/subject_authorities.csv', index=False)
+    df_subject_authorities.to_csv(f'../../data/{prefix}_050_subject_authorities.csv', index=False)
 
 
-def main():
-    df = read_dataframe()
-    extract_subjects(df)
-    extract_subject_authorities(df)
+def main(csv_file_path):
+    print('Hyper022ExtractSubjects20240416.py.')
+    df = read_dataframe(csv_file_path)
+    prefix = read_prefix()
+    extract_subjects(df, prefix)
+    extract_subject_authorities(df, prefix)
 
 
 if __name__ == '__main__':
-    main()
+    prefix = read_prefix()
+    csv_file_path = f'../../data/{prefix}_010_all_triples.csv'
+    main(csv_file_path)

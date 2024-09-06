@@ -7,7 +7,7 @@ import pydot
 # import matplotlib
 # import matplotlib.pyplot as plt
 
-df = pd.read_csv('../data/unique_authority_triples.csv')
+df = pd.read_csv('../../data/unique_authority_triples.csv')
 g = Graph()
 # nx_graph = nx.Graph()
 # matplotlib.use('TkAgg', force=True)

@@ -8,7 +8,8 @@ import os, re
 import rdflib
 from rdflib import Graph
 
-data_path = '/media/masuda/HDS2-UT/QuetsalData20240401/8898.SWDFood'
+# data_path = '/media/masuda/HDS2-UT/QuetsalData20240401/8898.SWDFood'
+data_path = '/media/masuda/HDS2-UT/QuetsalData20240401/8893.GeoNames'
 g = Graph()
 
 set_of_predicates = set()
